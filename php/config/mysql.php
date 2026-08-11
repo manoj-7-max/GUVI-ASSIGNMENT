@@ -20,7 +20,7 @@ try {
     header('Content-Type: application/json', true, 500);
     echo json_encode([
         'success' => false,
-        'message' => 'Database connection failed'
+        'message' => 'Database connection failed: ' . $e->getMessage()
     ]);
     exit;
 }

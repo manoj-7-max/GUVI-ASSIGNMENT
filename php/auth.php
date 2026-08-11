@@ -1,5 +1,4 @@
 <?php
-// php/auth.php
 require_once __DIR__ . '/config/redis.php';
 
 // Fallback for getallheaders if not available (e.g. php-fpm or built-in webserver on some systems)

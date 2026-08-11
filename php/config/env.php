@@ -1,5 +1,4 @@
 <?php
-// php/config/env.php
 
 if (!function_exists('getEnvVar')) {
     function getEnvVar($key, $default = null) {

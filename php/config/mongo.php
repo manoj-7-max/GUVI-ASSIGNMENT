@@ -1,5 +1,4 @@
 <?php
-// php/config/mongo.php
 require_once __DIR__ . '/env.php';
 
 try {

@@ -1,5 +1,4 @@
 <?php
-// php/config/mysql.php
 require_once __DIR__ . '/env.php';
 
 try {

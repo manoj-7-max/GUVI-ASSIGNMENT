@@ -16,6 +16,17 @@ try {
     ];
 
     $pdo = new PDO($dsn, $user, $pass, $options);
+
+    // Auto-migrate: create users table if it doesn't exist
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS `users` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `email` VARCHAR(255) NOT NULL UNIQUE,
+            `password` VARCHAR(255) NOT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ");
 } catch (\PDOException $e) {
     header('Content-Type: application/json', true, 500);
     echo json_encode([

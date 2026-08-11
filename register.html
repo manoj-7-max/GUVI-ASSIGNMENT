@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create an Account - SecureAuth</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <i class="bi bi-shield-lock-fill text-indigo-500 fs-4"></i>
+                <span class="fw-bold tracking-tight">SecureAuth</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-custom" href="login.html">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Registration Card -->
+    <div class="container my-auto py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="glass-card p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold card-title-gradient">Create Account</h2>
+                        <p class="text-secondary">Join us and access your secure profile</p>
+                    </div>
+
+                    <!-- Alert message container -->
+                    <div id="alert-container" class="alert d-none" role="alert"></div>
+
+                    <form id="registration-form" novalidate>
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label form-label-custom">Full Name</label>
+                            <input type="text" class="form-control form-control-custom" id="full_name" name="full_name" placeholder="John Doe" required>
+                            <div class="invalid-feedback">Please enter your full name.</div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label form-label-custom">Email Address</label>
+                            <input type="email" class="form-control form-control-custom" id="email" name="email" placeholder="name@example.com" required>
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                        </div>
+
+                        <!-- Mobile Number -->
+                        <div class="mb-3">
+                            <label for="mobile" class="form-label form-label-custom">Mobile Number</label>
+                            <input type="tel" class="form-control form-control-custom" id="mobile" name="mobile" placeholder="9876543210" required>
+                            <div class="invalid-feedback">Please enter a valid mobile number (10 to 15 digits).</div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label form-label-custom">Password</label>
+                            <div class="password-toggle-wrapper">
+                                <input type="password" class="form-control form-control-custom" id="password" name="password" placeholder="Min. 6 characters" required>
+                                <button type="button" class="password-toggle-btn" id="toggle-password">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">Password must be at least 6 characters long.</div>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label form-label-custom">Confirm Password</label>
+                            <div class="password-toggle-wrapper">
+                                <input type="password" class="form-control form-control-custom" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                                <button type="button" class="password-toggle-btn" id="toggle-confirm-password">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">Passwords must match.</div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-custom w-100 py-3">Register</button>
+                        </div>
+
+                        <div class="text-center">
+                            <span class="text-secondary small">Already have an account? <a href="login.html" class="text-indigo-400 text-decoration-none">Sign In</a></span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spinner Wrapper -->
+    <div class="spinner-wrapper" id="spinner">
+        <div class="spinner-border text-primary loading-spinner" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-secondary small">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 SecureAuth. Created for PHP Senior Internship Assignment.</p>
+        </div>
+    </footer>
+
+    <!-- jQuery & Bootstrap Bundle JS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- External Page JS -->
+    <script src="js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Management - SecureAuth</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <i class="bi bi-shield-lock-fill text-indigo-500 fs-4"></i>
+                <span class="fw-bold tracking-tight">SecureAuth</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-custom" id="btn-logout">Logout</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Dashboard -->
+    <div class="container my-auto py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-card p-4 p-md-5">
+                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary border-opacity-20 pb-3">
+                        <div>
+                            <h2 class="fw-bold card-title-gradient mb-1">User Profile</h2>
+                            <p class="text-secondary mb-0">View and update your profile details</p>
+                        </div>
+                        <div class="fs-1 text-indigo-400">
+                            <i class="bi bi-person-badge-fill"></i>
+                        </div>
+                    </div>
+
+                    <!-- Alert message container -->
+                    <div id="alert-container" class="alert d-none" role="alert"></div>
+
+                    <!-- Profile Form -->
+                    <form id="profile-form" novalidate>
+                        <div class="row g-3">
+                            <!-- Full Name -->
+                            <div class="col-md-6">
+                                <label for="full_name" class="form-label form-label-custom">Full Name</label>
+                                <input type="text" class="form-control form-control-custom" id="full_name" name="full_name" required>
+                                <div class="invalid-feedback">Full name is required.</div>
+                            </div>
+
+                            <!-- Email (Read-Only) -->
+                            <div class="col-md-6">
+                                <label for="email" class="form-label form-label-custom">Email Address (Read-Only)</label>
+                                <input type="email" class="form-control form-control-custom" id="email" name="email" readonly style="opacity: 0.6; cursor: not-allowed;">
+                            </div>
+
+                            <!-- Mobile Number -->
+                            <div class="col-md-6">
+                                <label for="mobile" class="form-label form-label-custom">Mobile Number</label>
+                                <input type="tel" class="form-control form-control-custom" id="mobile" name="mobile" required>
+                                <div class="invalid-feedback">Please enter a valid mobile number (10 to 15 digits).</div>
+                            </div>
+
+                            <!-- Age -->
+                            <div class="col-md-3">
+                                <label for="age" class="form-label form-label-custom">Age</label>
+                                <input type="number" class="form-control form-control-custom" id="age" name="age" min="0" max="120">
+                                <div class="invalid-feedback">Please enter a valid age (0 - 120).</div>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="col-md-3">
+                                <label for="date_of_birth" class="form-label form-label-custom">Date of Birth</label>
+                                <input type="date" class="form-control form-control-custom" id="date_of_birth" name="date_of_birth">
+                            </div>
+
+                            <!-- Address -->
+                            <div class="col-12">
+                                <label for="address" class="form-label form-label-custom">Address</label>
+                                <textarea class="form-control form-control-custom" id="address" name="address" rows="3" placeholder="Enter your full address"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-4 pt-3 d-flex justify-content-end gap-3 border-top border-secondary border-opacity-20">
+                            <button type="submit" class="btn btn-custom px-4 py-2">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spinner Wrapper -->
+    <div class="spinner-wrapper" id="spinner">
+        <div class="spinner-border text-primary loading-spinner" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-secondary small">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 SecureAuth. Created for PHP Senior Internship Assignment.</p>
+        </div>
+    </footer>
+
+    <!-- jQuery & Bootstrap Bundle JS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- External Page JS -->
+    <script src="js/profile.js"></script>
+</body>
+</html>

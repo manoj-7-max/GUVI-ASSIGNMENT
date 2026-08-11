@@ -21,8 +21,8 @@ if (empty($email) || empty($password)) {
 }
 
 try {
-    // Find user by email
-    $stmt = $pdo->prepare("SELECT id, full_name, email, password, mobile FROM users WHERE email = :email");
+    // Find user by email (only credentials in MySQL)
+    $stmt = $pdo->prepare("SELECT id, email, password FROM users WHERE email = :email");
     $stmt->execute([':email' => $email]);
     $user = $stmt->fetch();
 
@@ -66,7 +66,6 @@ try {
         'token' => $token,
         'user' => [
             'id' => (int)$user['id'],
-            'full_name' => $user['full_name'],
             'email' => $user['email']
         ]
     ]);

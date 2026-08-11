@@ -10,14 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Extract and sanitize input
 $fullName = isset($_POST['full_name']) ? trim($_POST['full_name']) : '';
 $email = isset($_POST['email']) ? trim($_POST['email']) : '';
 $password = isset($_POST['password']) ? $_POST['password'] : '';
 $confirmPassword = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
 $mobile = isset($_POST['mobile']) ? trim($_POST['mobile']) : '';
 
-// Validation
 if (empty($fullName) || empty($email) || empty($password) || empty($confirmPassword) || empty($mobile)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'All fields are required.']);
@@ -49,7 +47,7 @@ if (!preg_match('/^[0-9]{10,15}$/', $mobile)) {
 }
 
 try {
-    // Check if email already exists
+    // Check if email already exists in MySQL
     $stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email");
     $stmt->execute([':email' => $email]);
     if ($stmt->fetch()) {
@@ -58,24 +56,31 @@ try {
         exit;
     }
 
-    // Hash password
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-    // Insert user into MySQL
+    // Save registration credentials to MySQL
     $insertStmt = $pdo->prepare("
-        INSERT INTO users (full_name, email, password, mobile) 
-        VALUES (:full_name, :email, :password, :mobile)
+        INSERT INTO users (email, password) 
+        VALUES (:email, :password)
     ");
     $insertStmt->execute([
-        ':full_name' => $fullName,
         ':email' => $email,
-        ':password' => $hashedPassword,
-        ':mobile' => $mobile
+        ':password' => $hashedPassword
     ]);
 
     $userId = (int)$pdo->lastInsertId();
 
-    // Log registration in MongoDB
+    // Save profile details to MongoDB profiles collection
+    logToMongo('profiles', [
+        'user_id' => $userId,
+        'full_name' => $fullName,
+        'mobile' => $mobile,
+        'date_of_birth' => null,
+        'age' => null,
+        'address' => null
+    ]);
+
+    // Keep audit logging
     logToMongo('registration_logs', [
         'user_id' => $userId,
         'email' => $email,

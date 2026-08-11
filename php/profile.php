@@ -17,14 +17,12 @@ $action = isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ?
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'update_profile') {
-        // Get update fields
         $fullName = isset($_POST['full_name']) ? trim($_POST['full_name']) : '';
         $mobile = isset($_POST['mobile']) ? trim($_POST['mobile']) : '';
         $dob = isset($_POST['date_of_birth']) ? trim($_POST['date_of_birth']) : null;
         $age = isset($_POST['age']) ? (int)$_POST['age'] : null;
         $address = isset($_POST['address']) ? trim($_POST['address']) : null;
 
-        // Backend validations
         if (empty($fullName) || empty($mobile)) {
             http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Full Name and Mobile are required.']);
@@ -44,44 +42,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         try {
-            // Determine fields updated for MongoDB logging
-            $getStmt = $pdo->prepare("SELECT full_name, mobile, date_of_birth, age, address FROM users WHERE id = :id");
-            $getStmt->execute([':id' => $userId]);
-            $current = $getStmt->fetch();
+            // Find current profile from MongoDB to log changes
+            $filter = ['user_id' => (int)$userId];
+            $query = new MongoDB\Driver\Query($filter);
+            $cursor = $mongoManager->executeQuery("$mongoDbName.profiles", $query);
+            $currentArr = $cursor->toArray();
+            $current = !empty($currentArr) ? (array)$currentArr[0] : null;
 
             $fieldsUpdated = [];
             if ($current) {
-                if ($current['full_name'] !== $fullName) $fieldsUpdated[] = 'full_name';
-                if ($current['mobile'] !== $mobile) $fieldsUpdated[] = 'mobile';
-                if ($current['date_of_birth'] !== $dob) $fieldsUpdated[] = 'date_of_birth';
-                if ($current['age'] !== $age) $fieldsUpdated[] = 'age';
-                if ($current['address'] !== $address) $fieldsUpdated[] = 'address';
+                if (($current['full_name'] ?? '') !== $fullName) $fieldsUpdated[] = 'full_name';
+                if (($current['mobile'] ?? '') !== $mobile) $fieldsUpdated[] = 'mobile';
+                if (($current['date_of_birth'] ?? '') !== $dob) $fieldsUpdated[] = 'date_of_birth';
+                if (($current['age'] ?? null) !== $age) $fieldsUpdated[] = 'age';
+                if (($current['address'] ?? '') !== $address) $fieldsUpdated[] = 'address';
+            } else {
+                $fieldsUpdated = ['full_name', 'mobile', 'date_of_birth', 'age', 'address'];
             }
 
-            // Update user details
-            $updateStmt = $pdo->prepare("
-                UPDATE users 
-                SET full_name = :full_name, 
-                    mobile = :mobile, 
-                    date_of_birth = :date_of_birth, 
-                    age = :age, 
-                    address = :address 
-                WHERE id = :id
-            ");
-            
-            $updateStmt->execute([
-                ':full_name' => $fullName,
-                ':mobile' => $mobile,
-                ':date_of_birth' => empty($dob) ? null : $dob,
-                ':age' => empty($age) ? null : $age,
-                ':address' => empty($address) ? null : $address,
-                ':id' => $userId
-            ]);
+            // Update user details in MongoDB profiles collection
+            $bulk = new MongoDB\Driver\BulkWrite;
+            $bulk->update(
+                ['user_id' => (int)$userId],
+                ['$set' => [
+                    'full_name' => $fullName,
+                    'mobile' => $mobile,
+                    'date_of_birth' => empty($dob) ? null : $dob,
+                    'age' => empty($age) ? null : $age,
+                    'address' => empty($address) ? null : $address,
+                    'updated_at' => new MongoDB\BSON\UTCDateTime(round(microtime(true) * 1000))
+                ]],
+                ['upsert' => true]
+            );
+            $mongoManager->executeBulkWrite("$mongoDbName.profiles", $bulk);
 
-            // Only log if something changed
+            // Log update log in MongoDB
             if (!empty($fieldsUpdated)) {
                 logToMongo('profile_update_logs', [
-                    'user_id' => $userId,
+                    'user_id' => (int)$userId,
                     'action' => 'profile_update',
                     'fields_updated' => $fieldsUpdated
                 ]);
@@ -92,18 +90,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'message' => 'Profile updated successfully.'
             ]);
             exit;
-        } catch (\PDOException $e) {
+        } catch (\Exception $e) {
             http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Database error occurred during update.']);
+            echo json_encode(['success' => false, 'message' => 'Error occurred during profile update.']);
             exit;
         }
     }
 }
 
-// Default: GET/POST action to retrieve profile details
 if ($action === 'get_profile' || $_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
-        $stmt = $pdo->prepare("SELECT id, full_name, email, mobile, date_of_birth, age, address FROM users WHERE id = :id");
+        // Query Email from MySQL
+        $stmt = $pdo->prepare("SELECT email FROM users WHERE id = :id");
         $stmt->execute([':id' => $userId]);
         $user = $stmt->fetch();
 
@@ -113,13 +111,29 @@ if ($action === 'get_profile' || $_SERVER['REQUEST_METHOD'] === 'GET') {
             exit;
         }
 
+        // Query Profile details from MongoDB profiles collection
+        $filter = ['user_id' => (int)$userId];
+        $query = new MongoDB\Driver\Query($filter);
+        $cursor = $mongoManager->executeQuery("$mongoDbName.profiles", $query);
+        $profileArray = $cursor->toArray();
+        $profile = !empty($profileArray) ? (array)$profileArray[0] : [];
+
+        // Return combined data
         echo json_encode([
             'success' => true,
             'message' => 'Profile retrieved successfully',
-            'data' => $user
+            'data' => [
+                'id' => (int)$userId,
+                'email' => $user['email'],
+                'full_name' => $profile['full_name'] ?? '',
+                'mobile' => $profile['mobile'] ?? '',
+                'date_of_birth' => $profile['date_of_birth'] ?? null,
+                'age' => $profile['age'] ?? null,
+                'address' => $profile['address'] ?? ''
+            ]
         ]);
         exit;
-    } catch (\PDOException $e) {
+    } catch (\Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Database error occurred.']);
         exit;

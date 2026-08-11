@@ -1,7 +1,13 @@
 {
   "functions": {
-    "php/**/*.php": {
+    "api/**/*.php": {
       "runtime": "vercel-php@0.9.0"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/php/:path*",
+      "destination": "/api/:path*"
+    }
+  ]
 }
